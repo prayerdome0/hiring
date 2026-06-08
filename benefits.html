@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benefits | Seedwel Investment LTD - Virtual Assistant Rewards</title>
+    <meta name="description" content="Virtual Assistant benefits at Seedwel Investment LTD - 5-10% commission, certificates, holiday bonuses, performance rewards, and career growth.">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            color: #1a1a2e;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #34d399;
+            --dark: #1a1a2e;
+            --gray: #6b7280;
+            --light-gray: #f9fafb;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+            padding: 5px 0;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+        }
+
+        .menu-icon {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .menu-icon:hover {
+            background: var(--primary);
+        }
+
+        .menu-icon:hover i {
+            color: white;
+        }
+
+        .menu-icon i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-img {
+            height: 48px;
+            transition: transform 0.3s;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.02);
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 10px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            z-index: 1001;
+            padding: 100px 30px 30px;
+            transition: left 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu.active {
+            left: 0;
+        }
+
+        .mobile-menu .close-menu {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+            transition: 0.3s;
+        }
+
+        .mobile-menu .close-menu:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 14px 0;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            border-bottom: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary);
+            padding-left: 10px;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-top: 90px;
+            padding: 60px 30px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Benefits Grid */
+        .benefits-section {
+            padding: 60px 30px;
+        }
+
+        .benefits-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-card {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        .benefit-card:nth-child(1) { animation-delay: 0.1s; }
+        .benefit-card:nth-child(2) { animation-delay: 0.2s; }
+        .benefit-card:nth-child(3) { animation-delay: 0.3s; }
+        .benefit-card:nth-child(4) { animation-delay: 0.4s; }
+        .benefit-card:nth-child(5) { animation-delay: 0.5s; }
+        .benefit-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .benefit-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            transition: all 0.3s;
+        }
+
+        .benefit-card:hover .benefit-icon {
+            background: var(--primary);
+        }
+
+        .benefit-card:hover .benefit-icon i {
+            color: white;
+        }
+
+        .benefit-icon i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .benefit-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .benefit-card p {
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Commission Highlight */
+        .commission-highlight {
+            max-width: 1000px;
+            margin: 40px auto 0;
+            background: linear-gradient(135deg, var(--dark), #1e293b);
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            color: white;
+            animation: fadeInUp 0.6s ease 0.7s backwards;
+        }
+
+        .commission-highlight h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .commission-percent {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .commission-details {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .commission-detail {
+            text-align: center;
+        }
+
+        .commission-detail i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .btn-apply {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: white;
+            padding: 14px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn-apply:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            text-align: center;
+            padding: 60px 30px;
+            margin-top: 40px;
+        }
+
+        .cta-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: white;
+            font-size: 1.3rem;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            padding: 50px 30px 25px;
+            color: #a0aec0;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .footer-col a {
+            color: #a0aec0;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 12px;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--primary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .footer-social a {
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #2d3748;
+            font-size: 0.8rem;
+        }
+
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #25D366;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .floating-whatsapp:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 900px) {
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            .logo-img {
+                height: 40px;
+            }
+            .apply-btn {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+            }
+            .commission-percent {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="header">
+    <div class="header-inner">
+        <div class="menu-icon" id="menuIcon">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="logo-container">
+            <img src="https://i.ibb.co/svxj52ny/seedwel.png" alt="Seedwel Investment" class="logo-img">
+        </div>
+        <a href="apply.html" class="apply-btn">
+            <i class="fas fa-paper-plane"></i> Apply Now
+        </a>
+    </div>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <div class="close-menu" id="closeMenu"><i class="fas fa-times"></i></div>
+    <a href="index.html">Home</a>
+    <a href="apply.html">Apply Now</a>
+    <a href="benefits.html">Benefits</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html">Contact</a>
+    <a href="dashboard.html">Worker Login</a>
+</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- Page Header -->
+<section class="page-header">
+    <h1>Virtual Assistant <span style="color: #f0fdf4;">Benefits</span></h1>
+    <p>Join Seedwel Investment LTD and unlock these amazing rewards</p>
+</section>
+
+<!-- Benefits Grid -->
+<section class="benefits-section">
+    <div class="benefits-grid">
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fas fa-percent"></i></div>
+            <h3>5-10% Commission</h3>
+            <p>Earn competitive commission on every sale you make. The more you sell, the higher your commission rate goes up to 10%!</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fas fa-certificate"></i></div>
+            <h3>Certificate of Excellence</h3>
+            <p>Receive an official SEEDWEL certificate after successfully referring 10 clients. Recognition for your hard work!</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fas fa-gift"></i></div>
+            <h3>Holiday Bonuses</h3>
+            <p>Generous bonuses during Christmas, New Year, Easter, and other major holidays. Top performers get extra rewards!</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fas fa-trophy"></i></div>
+            <h3>Performance Rewards</h3>
+            <p>Monthly and quarterly cash bonuses for top-performing Virtual Assistants. Your hard work is always recognized!</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>Career Growth Path</h3>
+            <p>Clear promotion path: Trainee VA → Certified VA → Senior VA → Team Lead → Manager. Grow with us!</p>
+        </div>
+        <div class="benefit-card">
+            <div class="benefit-icon"><i class="fas fa-globe"></i></div>
+            <h3>Work Anywhere</h3>
+            <p>100% remote position. Work from home, coffee shop, or anywhere with an internet connection. Flexible hours!</p>
+        </div>
+    </div>
+
+    <!-- Commission Highlight -->
+    <div class="commission-highlight">
+        <h2>💰 Commission Structure</h2>
+        <div class="commission-percent">5% - 10%</div>
+        <p>per successful sale of our digital services</p>
+        <div class="commission-details">
+            <div class="commission-detail">
+                <i class="fas fa-chart-simple"></i>
+                <h4>Entry Level</h4>
+                <p>5% Commission</p>
+            </div>
+            <div class="commission-detail">
+                <i class="fas fa-chart-line"></i>
+                <h4>Mid Level</h4>
+                <p>7% Commission</p>
+            </div>
+            <div class="commission-detail">
+                <i class="fas fa-chart-column"></i>
+                <h4>Top Performer</h4>
+                <p>10% Commission</p>
+            </div>
+        </div>
+        <a href="apply.html" class="btn-apply"><i class="fas fa-paper-plane"></i> Apply Now</a>
+    </div>
+</section>
+
+<!-- CTA Section with Social Links -->
+<section class="cta-section">
+    <h2>Ready to Start Your Journey?</h2>
+    <p>Join our global community of Virtual Assistants and unlock these amazing benefits</p>
+    <div class="social-links">
+        <a href="https://www.linkedin.com/in/seedwel-investment-ltd-undefined-a71169415" target="_blank" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://www.facebook.com/profile.php?id=61566952778871" target="_blank" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/seedwelinvestment" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/@seedwelinvestmentltd" target="_blank" class="social-icon"><i class="fab fa-youtube"></i></a>
+        <a href="https://whatsapp.com/channel/0029Vb8S2vJ7Noa0wFm38Y3w" target="_blank" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4>SEEDWEL INVESTMENT LTD</h4>
+            <p>Hiring Virtual Assistants worldwide. Earn 5-10% commission.</p>
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/in/seedwel-investment-ltd-undefined-a71169415" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=61566952778871" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/seedwelinvestment" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.youtube.com/@seedwelinvestmentltd" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <a href="index.html">Home</a>
+            <a href="apply.html">Apply Now</a>
+            <a href="benefits.html">Benefits</a>
+            <a href="faq.html">FAQ</a>
+        </div>
+        <div class="footer-col">
+            <h4>Support</h4>
+            <a href="contact.html">Contact Us</a>
+            <a href="dashboard.html">Worker Login</a>
+            <a href="https://whatsapp.com/channel/0029Vb8S2vJ7Noa0wFm38Y3w" target="_blank">WhatsApp Channel</a>
+        </div>
+        <div class="footer-col">
+            <h4>Contact</h4>
+            <a><i class="fas fa-phone"></i> +260 973 028 342</a>
+            <a><i class="fab fa-whatsapp"></i> +268 7658 1804</a>
+            <a><i class="fas fa-envelope"></i> seedwelinvestmentltd@gmail.com</a>
+        </div>
+    </div>
+    <div class="copyright">
+        <p>&copy; 2025 Seedwel Investment LTD. All rights reserved. | Professional Virtual Assistant Hiring</p>
+    </div>
+</footer>
+
+<a href="https://wa.me/260973028342" class="floating-whatsapp" target="_blank"><i class="fab fa-whatsapp fa-2x" style="color:white;"></i></a>
+
+<script>
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Mobile menu
+    const menuIcon = document.getElementById('menuIcon');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+
+    function openMenu() {
+        mobileMenu.classList.add('active');
+        menuOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenuFunc() {
+        mobileMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    menuIcon.addEventListener('click', openMenu);
+    closeMenu.addEventListener('click', closeMenuFunc);
+    menuOverlay.addEventListener('click', closeMenuFunc);
+</script>
+</body>
+</html>

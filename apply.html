@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Now | Seedwel Investment LTD - Virtual Assistant</title>
+    <meta name="description" content="Apply to become a Virtual Assistant at Seedwel Investment LTD. Earn 5-10% commission, work remotely, get certified.">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            color: #1a1a2e;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #34d399;
+            --dark: #1a1a2e;
+            --gray: #6b7280;
+            --light-gray: #f9fafb;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+            padding: 5px 0;
+        }
+
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 30px;
+        }
+
+        .menu-icon {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .menu-icon:hover {
+            background: var(--primary);
+        }
+
+        .menu-icon:hover i {
+            color: white;
+        }
+
+        .menu-icon i {
+            font-size: 1.3rem;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .logo-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-img {
+            height: 48px;
+            transition: transform 0.3s;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.02);
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 10px 28px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 300px;
+            height: 100vh;
+            background: white;
+            z-index: 1001;
+            padding: 100px 30px 30px;
+            transition: left 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 2px 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu.active {
+            left: 0;
+        }
+
+        .mobile-menu .close-menu {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+            transition: 0.3s;
+        }
+
+        .mobile-menu .close-menu:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 14px 0;
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            border-bottom: 1px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary);
+            padding-left: 10px;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-top: 90px;
+            padding: 60px 30px 30px;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Application Form Container */
+        .apply-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 30px 60px;
+        }
+
+        .commission-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 24px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .commission-card h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .commission-percent {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 15px 0;
+        }
+
+        .commission-card p {
+            opacity: 0.9;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .form-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .form-card .subtitle {
+            color: var(--gray);
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .info-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        .whatsapp-channel {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(37, 211, 102, 0.1);
+            border-radius: 20px;
+        }
+
+        .whatsapp-channel a {
+            background: #25D366;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .whatsapp-channel a:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            padding: 50px 30px 25px;
+            color: #a0aec0;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .footer-col a {
+            color: #a0aec0;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 12px;
+            transition: color 0.3s;
+        }
+
+        .footer-col a:hover {
+            color: var(--primary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .footer-social a {
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .footer-social a:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid #2d3748;
+            font-size: 0.8rem;
+        }
+
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #25D366;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .floating-whatsapp:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 900px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            .logo-img {
+                height: 40px;
+            }
+            .apply-btn {
+                padding: 8px 20px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .form-card {
+                padding: 25px;
+            }
+            .commission-percent {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="header">
+    <div class="header-inner">
+        <div class="menu-icon" id="menuIcon">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="logo-container">
+            <img src="https://i.ibb.co/svxj52ny/seedwel.png" alt="Seedwel Investment" class="logo-img">
+        </div>
+        <a href="apply.html" class="apply-btn">
+            <i class="fas fa-paper-plane"></i> Apply Now
+        </a>
+    </div>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <div class="close-menu" id="closeMenu"><i class="fas fa-times"></i></div>
+    <a href="index.html">Home</a>
+    <a href="apply.html">Apply Now</a>
+    <a href="benefits.html">Benefits</a>
+    <a href="faq.html">FAQ</a>
+    <a href="contact.html">Contact</a>
+    <a href="dashboard.html">Worker Login</a>
+</div>
+<div class="menu-overlay" id="menuOverlay"></div>
+
+<!-- Page Header -->
+<section class="page-header">
+    <h1>Apply to Become a <span style="color: #f0fdf4;">Virtual Assistant</span></h1>
+    <p>Start your journey with Seedwel Investment LTD today</p>
+</section>
+
+<div class="apply-container">
+    <!-- Commission Card -->
+    <div class="commission-card">
+        <i class="fas fa-chart-line" style="font-size: 2.5rem;"></i>
+        <h2>Commission Structure</h2>
+        <div class="commission-percent">5% - 10%</div>
+        <p>per successful sale of our digital services</p>
+        <p style="margin-top: 10px;">🏆 Certificate after 10 clients | 🎁 Holiday Bonuses | 📈 Growth Path</p>
+    </div>
+
+    <!-- Application Form -->
+    <div class="form-card">
+        <h3><i class="fas fa-user-plus" style="color: var(--primary);"></i> Virtual Assistant Application</h3>
+        <p class="subtitle">Fill out the form below to start your application</p>
+
+        <form id="applicationForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name *</label>
+                    <input type="text" id="fullName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email Address *</label>
+                    <input type="email" id="email" placeholder="you@example.com" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fab fa-whatsapp"></i> WhatsApp Number *</label>
+                    <input type="tel" id="phone" placeholder="+260 XXX XXX XXX" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Location *</label>
+                    <input type="text" id="location" placeholder="City, Country" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label><i class="fas fa-chart-simple"></i> Experience Level *</label>
+                    <select id="experience" required>
+                        <option value="">Select experience</option>
+                        <option value="beginner">Beginner (No experience - training provided)</option>
+                        <option value="intermediate">Intermediate (1-2 years experience)</option>
+                        <option value="experienced">Experienced (3+ years experience)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Availability *</label>
+                    <select id="availability" required>
+                        <option value="">Select availability</option>
+                        <option value="full-time">Full-time (40+ hours/week)</option>
+                        <option value="part-time">Part-time (20-30 hours/week)</option>
+                        <option value="flexible">Flexible hours</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-code"></i> Skills (Select all that apply)</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 10px;">
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" value="Customer Service"> Customer Service</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" value="Data Entry"> Data Entry</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" value="Social Media"> Social Media</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" value="Email Management"> Email Management</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" value="Sales"> Sales/Marketing</label>
+                    <label style="display: flex; align-items: center; gap: 5px;"><input type="checkbox" value="Administrative"> Administrative</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-comment"></i> Why do you want to become a Virtual Assistant? *</label>
+                <textarea id="why" rows="4" placeholder="Tell us about yourself and why you're interested..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Application
+            </button>
+        </form>
+
+        <p class="info-text">
+            <i class="fas fa-lock" style="color: var(--primary);"></i> Your information is secure. 
+            We'll contact you within 3-5 business days.
+        </p>
+
+        <!-- WhatsApp Channel -->
+        <div class="whatsapp-channel">
+            <a href="https://whatsapp.com/channel/0029Vb8S2vJ7Noa0wFm38Y3w" target="_blank">
+                <i class="fab fa-whatsapp"></i> Join our WhatsApp Channel for Updates
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4>SEEDWEL INVESTMENT LTD</h4>
+            <p>Hiring Virtual Assistants worldwide. Earn 5-10% commission.</p>
+            <div class="footer-social">
+                <a href="https://www.linkedin.com/in/seedwel-investment-ltd-undefined-a71169415" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=61566952778871" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/seedwelinvestment" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.youtube.com/@seedwelinvestmentltd" target="_blank"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <a href="index.html">Home</a>
+            <a href="apply.html">Apply Now</a>
+            <a href="benefits.html">Benefits</a>
+            <a href="faq.html">FAQ</a>
+        </div>
+        <div class="footer-col">
+            <h4>Support</h4>
+            <a href="contact.html">Contact Us</a>
+            <a href="dashboard.html">Worker Login</a>
+            <a href="https://whatsapp.com/channel/0029Vb8S2vJ7Noa0wFm38Y3w" target="_blank">WhatsApp Channel</a>
+        </div>
+        <div class="footer-col">
+            <h4>Contact</h4>
+            <a><i class="fas fa-phone"></i> +260 973 028 342</a>
+            <a><i class="fab fa-whatsapp"></i> +268 7658 1804</a>
+            <a><i class="fas fa-envelope"></i> seedwelinvestmentltd@gmail.com</a>
+        </div>
+    </div>
+    <div class="copyright">
+        <p>&copy; 2025 Seedwel Investment LTD. All rights reserved. | Professional Virtual Assistant Hiring</p>
+    </div>
+</footer>
+
+<a href="https://wa.me/260973028342" class="floating-whatsapp" target="_blank"><i class="fab fa-whatsapp fa-2x" style="color:white;"></i></a>
+
+<script>
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyA-BpRy-RVc2rqIG6uiRu_XrGEu1ZGnQwU",
+        authDomain: "seedwel-investment-limited.firebaseapp.com",
+        databaseURL: "https://seedwel-investment-limited-default-rtdb.firebaseio.com",
+        projectId: "seedwel-investment-limited",
+        storageBucket: "seedwel-investment-limited.firebasestorage.app",
+        messagingSenderId: "197778268619",
+        appId: "1:197778268619:web:92f29d88fa5a22dbfa964e"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Mobile menu
+    const menuIcon = document.getElementById('menuIcon');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenu = document.getElementById('closeMenu');
+
+    function openMenu() {
+        mobileMenu.classList.add('active');
+        menuOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenuFunc() {
+        mobileMenu.classList.remove('active');
+        menuOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    menuIcon.addEventListener('click', openMenu);
+    closeMenu.addEventListener('click', closeMenuFunc);
+    menuOverlay.addEventListener('click', closeMenuFunc);
+
+    // Form submission
+    const form = document.getElementById('applicationForm');
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Get selected skills
+        const skills = [];
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            skills.push(cb.value);
+        });
+
+        const applicationData = {
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            location: document.getElementById('location').value,
+            experience: document.getElementById('experience').value,
+            availability: document.getElementById('availability').value,
+            skills: skills,
+            why: document.getElementById('why').value,
+            status: 'pending',
+            createdAt: Date.now()
+        };
+
+        db.ref('applications').push(applicationData)
+            .then(() => {
+                alert('✅ Application submitted successfully!\n\nWe will contact you within 3-5 business days.');
+                form.reset();
+                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            })
+            .catch((error) => {
+                alert('❌ Error submitting application: ' + error.message);
+            });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Seedwel Investment LTD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --dark: #1a1a2e;
+            --gray: #6b7280;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--dark);
+            padding: 15px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        .logo-img {
+            height: 40px;
+        }
+
+        .admin-title {
+            font-weight: 600;
+            margin-left: 15px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            display: flex;
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e5e7eb;
+            padding: 30px 0;
+            position: fixed;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 25px;
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar nav a i {
+            width: 22px;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: var(--light-gray);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: var(--primary);
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .btn-small {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin: 2px;
+        }
+
+        .btn-approve {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-view {
+            background: var(--info);
+            color: white;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 90%;
+            padding: 30px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            float: right;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.3s;
+                z-index: 99;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <div style="display: flex; align-items: center;">
+        <div class="menu-toggle" id="menuToggle" style="display: none; cursor: pointer; margin-right: 15px;">
+            <i class="fas fa-bars fa-lg"></i>
+        </div>
+        <img src="https://i.ibb.co/svxj52ny/seedwel.png" class="logo-img" alt="Seedwel">
+        <span class="admin-title">Admin Dashboard</span>
+    </div>
+    <div>
+        <span id="adminEmailDisplay" style="margin-right: 15px;"></span>
+        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</header>
+
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <nav>
+            <a href="#" class="active" data-section="overview"><i class="fas fa-tachometer-alt"></i> Overview</a>
+            <a href="#" data-section="applications"><i class="fas fa-users"></i> Applications</a>
+            <a href="#" data-section="vas"><i class="fas fa-user-check"></i> Virtual Assistants</a>
+            <a href="#" data-section="tasks"><i class="fas fa-tasks"></i> Assign Tasks</a>
+            <a href="#" data-section="notifications"><i class="fas fa-bell"></i> Send Notification</a>
+            <a href="#" data-section="reports"><i class="fas fa-file-alt"></i> VA Reports</a>
+            <a href="#" data-section="commission"><i class="fas fa-chart-line"></i> Commission Settings</a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Overview Section -->
+        <div id="overviewSection">
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card"><div><div class="stat-number" id="statApplications">0</div><div>Applications</div></div><div class="stat-icon"><i class="fas fa-users"></i></div></div>
+                <div class="stat-card"><div><div class="stat-number" id="statVAs">0</div><div>Active VAs</div></div><div class="stat-icon"><i class="fas fa-user-check"></i></div></div>
+                <div class="stat-card"><div><div class="stat-number" id="statTasks">0</div><div>Tasks Assigned</div></div><div class="stat-icon"><i class="fas fa-tasks"></i></div></div>
+                <div class="stat-card"><div><div class="stat-number" id="statReports">0</div><div>Reports Today</div></div><div class="stat-icon"><i class="fas fa-file-alt"></i></div></div>
+            </div>
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-clock"></i> Recent Applications</div>
+                <div class="data-table"><table id="recentApplicationsTable"><tr><td colspan="4">Loading...</td></tr></table></div>
+            </div>
+        </div>
+
+        <!-- Applications Section -->
+        <div id="applicationsSection" style="display: none;">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-users"></i> VA Applications</div>
+                <div class="data-table"><table id="applicationsTable"><tr><td colspan="5">Loading...</td></tr></table></div>
+            </div>
+        </div>
+
+        <!-- Virtual Assistants Section -->
+        <div id="vasSection" style="display: none;">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-user-check"></i> Approved Virtual Assistants</div>
+                <div class="data-table"><table id="vasTable"><tr><td colspan="4">Loading...</td></tr></table></div>
+            </div>
+        </div>
+
+        <!-- Assign Tasks Section -->
+        <div id="tasksSection" style="display: none;">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-tasks"></i> Assign New Task</div>
+                <form id="assignTaskForm">
+                    <div class="form-group">
+                        <label>Select VA *</label>
+                        <select id="taskVA" required><option value="">Choose Virtual Assistant</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Task Title *</label>
+                        <input type="text" id="taskTitle" placeholder="e.g., Complete client onboarding" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="taskDesc" rows="3" placeholder="Detailed task description..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Due Date</label>
+                        <input type="date" id="taskDueDate">
+                    </div>
+                    <button type="submit" class="btn-small" style="background: var(--primary); color: white; padding: 10px 20px;"><i class="fas fa-plus"></i> Assign Task</button>
+                </form>
+            </div>
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-list"></i> All Assigned Tasks</div>
+                <div class="data-table"><table id="allTasksTable"><tr><td colspan="4">Loading...</td></tr></table></div>
+            </div>
+        </div>
+
+        <!-- Send Notification Section -->
+        <div id="notificationsSection" style="display: none;">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-bell"></i> Send Notification to VAs</div>
+                <form id="notificationForm">
+                    <div class="form-group">
+                        <label>Send to *</label>
+                        <select id="notifyTarget" required>
+                            <option value="all">All Virtual Assistants</option>
+                            <option value="specific">Specific Virtual Assistant</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="specificVADiv" style="display: none;">
+                        <label>Select VA</label>
+                        <select id="specificVA"><option value="">Choose VA</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Notification Message *</label>
+                        <textarea id="notificationMessage" rows="3" placeholder="Enter your message..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Icon (optional)</label>
+                        <select id="notificationIcon"><option value="fa-bell">🔔 Bell</option><option value="fa-info-circle">ℹ️ Info</option><option value="fa-check-circle">✅ Success</option><option value="fa-warning">⚠️ Warning</option></select>
+                    </div>
+                    <button type="submit" class="btn-small" style="background: var(--primary); color: white; padding: 10px 20px;"><i class="fas fa-paper-plane"></i> Send Notification</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- VA Reports Section -->
+        <div id="reportsSection" style="display: none;">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-file-alt"></i> VA Daily Reports</div>
+                <div class="data-table"><table id="reportsTable"><tr><td colspan="4">Loading...</td></tr></table></div>
+            </div>
+        </div>
+
+        <!-- Commission Settings Section -->
+        <div id="commissionSection" style="display: none;">
+            <div class="section-card">
+                <div class="section-title"><i class="fas fa-chart-line"></i> Commission Settings</div>
+                <form id="commissionForm">
+                    <div class="form-group">
+                        <label>Select VA</label>
+                        <select id="commissionVA" required><option value="">Choose Virtual Assistant</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Commission Rate (%) *</label>
+                        <input type="number" id="commissionRate" step="0.5" min="5" max="10" placeholder="5-10%" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Add Clients</label>
+                        <input type="number" id="addClients" placeholder="Number of clients to add" value="0">
+                    </div>
+                    <button type="submit" class="btn-small" style="background: var(--primary); color: white; padding: 10px 20px;"><i class="fas fa-save"></i> Update Commission</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Application Modal -->
+<div class="modal" id="appModal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeModal('appModal')">&times;</span>
+        <h3>Application Details</h3>
+        <div id="appModalContent"></div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyA-BpRy-RVc2rqIG6uiRu_XrGEu1ZGnQwU",
+        authDomain: "seedwel-investment-limited.firebaseapp.com",
+        databaseURL: "https://seedwel-investment-limited-default-rtdb.firebaseio.com",
+        projectId: "seedwel-investment-limited",
+        storageBucket: "seedwel-investment-limited.firebasestorage.app",
+        messagingSenderId: "197778268619",
+        appId: "1:197778268619:web:92f29d88fa5a22dbfa964e"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let currentAdmin = null;
+
+    // Check authentication
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            currentAdmin = user;
+            document.getElementById('adminEmailDisplay').textContent = user.email;
+            loadDashboardData();
+            loadVAsForDropdowns();
+        } else {
+            window.location.href = 'admin-login.html';
+        }
+    });
+
+    function loadDashboardData() {
+        // Load applications count
+        db.ref('applications').once('value', (snap) => {
+            const count = snap.numChildren();
+            document.getElementById('statApplications').textContent = count;
+        });
+
+        // Load VAs count
+        db.ref('vas').once('value', (snap) => {
+            const count = snap.numChildren();
+            document.getElementById('statVAs').textContent = count;
+        });
+
+        // Load tasks count
+        db.ref('tasks').once('value', (snap) => {
+            const count = snap.numChildren();
+            document.getElementById('statTasks').textContent = count;
+        });
+
+        // Load today's reports
+        const today = new Date().toDateString();
+        db.ref('reports').once('value', (snap) => {
+            let count = 0;
+            snap.forEach((child) => {
+                if (new Date(child.val().createdAt).toDateString() === today) count++;
+            });
+            document.getElementById('statReports').textContent = count;
+        });
+
+        // Load recent applications
+        loadRecentApplications();
+    }
+
+    function loadRecentApplications() {
+        db.ref('applications').limitToLast(5).once('value', (snap) => {
+            let html = '<thead><tr><th>Name</th><th>Email</th><th>Experience</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+            snap.forEach((child) => {
+                const app = child.val();
+                html += `<tr>
+                    <td>${app.fullName || 'N/A'}</td>
+                    <td>${app.email || 'N/A'}</td>
+                    <td>${app.experience || 'N/A'}</td>
+                    <td><span class="status-badge status-${app.status === 'approved' ? 'approved' : (app.status === 'rejected' ? 'rejected' : 'pending')}">${app.status || 'pending'}</span></td>
+                    <td><button class="btn-small btn-view" onclick="viewApplication('${child.key}')">View</button></td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('recentApplicationsTable').innerHTML = html;
+        });
+    }
+
+    function loadApplications() {
+        db.ref('applications').once('value', (snap) => {
+            let html = '<thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Experience</th><th>Status</th><th>Action</th></tr></thead><tbody>';
+            snap.forEach((child) => {
+                const app = child.val();
+                html += `<tr>
+                    <td>${app.fullName || 'N/A'}</td>
+                    <td>${app.email || 'N/A'}</td>
+                    <td>${app.phone || 'N/A'}</td>
+                    <td>${app.experience || 'N/A'}</td>
+                    <td><span class="status-badge status-${app.status === 'approved' ? 'approved' : (app.status === 'rejected' ? 'rejected' : 'pending')}">${app.status || 'pending'}</span></td>
+                    <td><button class="btn-small btn-approve" onclick="approveApplication('${child.key}')">Approve</button><button class="btn-small btn-reject" onclick="rejectApplication('${child.key}')">Reject</button><button class="btn-small btn-view" onclick="viewApplication('${child.key}')">View</button></td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('applicationsTable').innerHTML = html;
+        });
+    }
+
+    function approveApplication(id) {
+        db.ref('applications/' + id).update({ status: 'approved' });
+        alert('Application approved!');
+        loadApplications();
+    }
+
+    function rejectApplication(id) {
+        db.ref('applications/' + id).update({ status: 'rejected' });
+        alert('Application rejected');
+        loadApplications();
+    }
+
+    function viewApplication(id) {
+        db.ref('applications/' + id).once('value', (snap) => {
+            const app = snap.val();
+            const modalContent = document.getElementById('appModalContent');
+            modalContent.innerHTML = `
+                <p><strong>Full Name:</strong> ${app.fullName}</p>
+                <p><strong>Email:</strong> ${app.email}</p>
+                <p><strong>Phone:</strong> ${app.phone}</p>
+                <p><strong>Location:</strong> ${app.location}</p>
+                <p><strong>Experience:</strong> ${app.experience}</p>
+                <p><strong>Why:</strong> ${app.why}</p>
+                <p><strong>Status:</strong> ${app.status || 'pending'}</p>
+                ${app.status !== 'approved' ? `<button class="btn-small btn-approve" onclick="approveApplication('${id}'); closeModal('appModal')">Approve</button> <button class="btn-small btn-reject" onclick="rejectApplication('${id}'); closeModal('appModal')">Reject</button>` : ''}
+            `;
+            document.getElementById('appModal').classList.add('active');
+        });
+    }
+
+    function loadVAs() {
+        db.ref('vas').once('value', (snap) => {
+            let html = '<thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Commission</th><th>Clients</th></tr></thead><tbody>';
+            snap.forEach((child) => {
+                const va = child.val();
+                html += `<tr>
+                    <td>${va.name || 'N/A'}</td>
+                    <td>${va.email || 'N/A'}</td>
+                    <td>${va.phone || 'N/A'}</td>
+                    <td>${va.commissionRate || 5}%</td>
+                    <td>${va.clients || 0}</td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('vasTable').innerHTML = html;
+        });
+    }
+
+    function loadVAsForDropdowns() {
+        db.ref('vas').once('value', (snap) => {
+            let options = '<option value="">Choose VA</option>';
+            snap.forEach((child) => {
+                const va = child.val();
+                options += `<option value="${child.key}">${va.name || va.email} (${va.email})</option>`;
+            });
+            document.getElementById('taskVA').innerHTML = options;
+            document.getElementById('specificVA').innerHTML = options;
+            document.getElementById('commissionVA').innerHTML = options;
+        });
+    }
+
+    // Assign Task
+    document.getElementById('assignTaskForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const taskData = {
+            assignedTo: document.getElementById('taskVA').value,
+            title: document.getElementById('taskTitle').value,
+            description: document.getElementById('taskDesc').value,
+            dueDate: document.getElementById('taskDueDate').value,
+            status: 'pending',
+            createdAt: Date.now()
+        };
+        db.ref('tasks').push(taskData).then(() => {
+            alert('Task assigned successfully!');
+            document.getElementById('assignTaskForm').reset();
+            loadAllTasks();
+        });
+    });
+
+    function loadAllTasks() {
+        db.ref('tasks').once('value', (snap) => {
+            let html = '<thead><tr><th>VA</th><th>Task</th><th>Status</th><th>Due Date</th><th>Action</th></tr></thead><tbody>';
+            snap.forEach((child) => {
+                const task = child.val();
+                html += `<tr>
+                    <td>${task.assignedTo || 'N/A'}</td>
+                    <td>${task.title || 'N/A'}</td>
+                    <td><span class="status-badge status-${task.status === 'completed' ? 'approved' : 'pending'}">${task.status || 'pending'}</span></td>
+                    <td>${task.dueDate || 'No date'}</td>
+                    <td><button class="btn-small btn-danger" onclick="deleteTask('${child.key}')">Delete</button></td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('allTasksTable').innerHTML = html;
+        });
+    }
+
+    function deleteTask(id) {
+        if (confirm('Delete this task?')) {
+            db.ref('tasks/' + id).remove();
+            loadAllTasks();
+        }
+    }
+
+    // Send Notification
+    document.getElementById('notificationForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const target = document.getElementById('notifyTarget').value;
+        const message = document.getElementById('notificationMessage').value;
+        const icon = document.getElementById('notificationIcon').value;
+        const specificVA = document.getElementById('specificVA').value;
+
+        const notificationData = {
+            message: message,
+            icon: icon,
+            read: false,
+            createdAt: Date.now()
+        };
+
+        if (target === 'all') {
+            db.ref('vas').once('value', (snap) => {
+                const promises = [];
+                snap.forEach((child) => {
+                    const notif = { ...notificationData, userId: child.key };
+                    promises.push(db.ref('notifications').push(notif));
+                });
+                Promise.all(promises).then(() => {
+                    alert('Notification sent to all VAs!');
+                    document.getElementById('notificationForm').reset();
+                });
+            });
+        } else {
+            notificationData.userId = specificVA;
+            db.ref('notifications').push(notificationData).then(() => {
+                alert('Notification sent!');
+                document.getElementById('notificationForm').reset();
+            });
+        }
+    });
+
+    // Load Reports
+    function loadReports() {
+        db.ref('reports').once('value', (snap) => {
+            let html = '<thead><tr><th>VA ID</th><th>Report</th><th>Date</th></tr></thead><tbody>';
+            snap.forEach((child) => {
+                const report = child.val();
+                const date = new Date(report.createdAt).toLocaleString();
+                html += `<tr>
+                    <td>${report.userId || 'N/A'}</td>
+                    <td>${report.text || 'N/A'}</td>
+                    <td>${date}</td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('reportsTable').innerHTML = html;
+        });
+    }
+
+    // Update Commission
+    document.getElementById('commissionForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const vaId = document.getElementById('commissionVA').value;
+        const rate = document.getElementById('commissionRate').value;
+        const addClients = parseInt(document.getElementById('addClients').value) || 0;
+
+        db.ref('vas/' + vaId).once('value', (snap) => {
+            const va = snap.val();
+            const newClients = (va.clients || 0) + addClients;
+            db.ref('vas/' + vaId).update({
+                commissionRate: rate,
+                clients: newClients
+            }).then(() => {
+                alert('Commission updated!');
+                document.getElementById('commissionForm').reset();
+                loadVAs();
+            });
+        });
+    });
+
+    // Section Navigation
+    const sections = ['overview', 'applications', 'vas', 'tasks', 'notifications', 'reports', 'commission'];
+    function showSection(section) {
+        sections.forEach(s => {
+            document.getElementById(s + 'Section').style.display = s === section ? 'block' : 'none';
+        });
+        document.querySelectorAll('.sidebar nav a').forEach(a => {
+            a.classList.remove('active');
+            if (a.dataset.section === section) a.classList.add('active');
+        });
+        if (section === 'applications') loadApplications();
+        if (section === 'vas') loadVAs();
+        if (section === 'tasks') loadAllTasks();
+        if (section === 'reports') loadReports();
+    }
+
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSection(link.dataset.section);
+        });
+    });
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Logout
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        auth.signOut().then(() => {
+            localStorage.removeItem('adminLoggedIn');
+            window.location.href = 'admin-login.html';
+        });
+    });
+
+    // Mobile menu
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle) {
+        menuToggle.style.display = window.innerWidth <= 900 ? 'block' : 'none';
+        menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
+        window.addEventListener('resize', () => {
+            menuToggle.style.display = window.innerWidth <= 900 ? 'block' : 'none';
+            if (window.innerWidth > 900) sidebar.classList.remove('active');
+        });
+    }
+
+    // Toggle specific VA dropdown
+    document.getElementById('notifyTarget')?.addEventListener('change', (e) => {
+        document.getElementById('specificVADiv').style.display = e.target.value === 'specific' ? 'block' : 'none';
+    });
+
+    showSection('overview');
+</script>
+</body>
+</html>
